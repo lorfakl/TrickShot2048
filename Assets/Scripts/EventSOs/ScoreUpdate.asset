@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: ScoreUpdate
   m_EditorClassIdentifier: 
   relevantVariables:
-  - UseConstant: 1
-    ConstantValue: 4
+  - UseConstant: 0
+    ConstantValue: 2
     Variable: {fileID: 0}
-  - UseConstant: 1
-    ConstantValue: 5
+  - UseConstant: 0
+    ConstantValue: 1
     Variable: {fileID: 0}

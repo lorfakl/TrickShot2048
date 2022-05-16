@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   relevantVariables:
   - UseConstant: 1
-    ConstantValue: 0
+    ConstantValue: 2
     Variable: {fileID: 0}

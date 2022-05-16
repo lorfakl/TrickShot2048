@@ -14,9 +14,15 @@ public class ComboUIUpdater : MonoBehaviour
     FloatReference scoreMultiplier;
     [SerializeField]
     FloatReference columnIndex;
+
     public UnityEvent<List<FloatReference>> ApplyScoreMultiplierEvent;
 
-    float comboLevel = 0;
+    public float ComboMultiplier
+    {
+        get { return comboLevel; }
+    }
+
+    float comboLevel = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -59,9 +65,10 @@ public class ComboUIUpdater : MonoBehaviour
     {
         if (comboLevelIndex[0].Value == (float)indexOfThisComboPrefab)
         {
+            Utilities.HelperFunctions.Log("Combo Removed");
             scoreMultiplier.Variable.Value = comboLevel;
             columnIndex.Variable.Value = (float)indexOfThisComboPrefab;
-            comboLevel = 0;
+            comboLevel = 1;
             if (comboLevelText.enabled)
             {
                 comboLevelText.enabled = false;

@@ -10,6 +10,7 @@ using System.Collections;
 
 public class BlockManager : MonoBehaviour
 {
+    
     [SerializeField]
     bool canSpawnBlock = true;
     [SerializeField]
@@ -17,9 +18,13 @@ public class BlockManager : MonoBehaviour
     [SerializeField]
     bool enableMultipleColumns = true;
     [SerializeField]
+    bool placeEvenly = true;
+    [SerializeField]
     bool isUsingRandomVals = true;
     [SerializeField]
     GameObject blockPrefab;
+    [SerializeField]
+    GameObject gameOverUiPrefab;
     [SerializeField]
     Transform[] columnBases; //these transforms are from left to right in the scene
     [SerializeField]
@@ -30,10 +35,15 @@ public class BlockManager : MonoBehaviour
     //public static UnityEvent<BlockController> contactMade = new UnityEvent<BlockController>();
     public BlockContantactEvent blockContactEventPublisher;
 
+    [Range(0.1f, 1f)]
+    public float gravityControl;
+
     public float secondsBetweenSpeedIncrease  = 90;
     public float secondsBetweenBlockSpawn = 1.0f;
     public float gravityIncreasePercentage = 0.05f;
     public float deleteInSeconds = 1.5f;
+
+    float defaultGravity = -9.8f;
 
     [SerializeField]
     FloatReference playerScore;
@@ -45,6 +55,20 @@ public class BlockManager : MonoBehaviour
     public UnityEvent<List<FloatReference>> UpdateScoreEvent;
     public UnityEvent<List<FloatReference>> RemoveComboLevel;
     public UnityEvent<List<FloatReference>> IncreaseComboLevel;
+    public UnityEvent<BlockController> BlockSpawnedEvent;
+    public UnityEvent<BlockController> BlockHitByCubeEvent;
+    public UnityEvent<BlockController> BlockOnBlockContactEvent;
+    public UnityEvent<BlockController> BlockOnGroundContactEvent;
+    public UnityEvent GameOverEvent;
+
+    #region C# Events
+
+    public event EventHandler<BlockSpawnedEventArgs> OnBlockSpawmed;
+    public class BlockSpawnedEventArgs : EventArgs
+    {
+        public BlockController block;
+    }
+    #endregion
 
     public BlockManager Instance { get; private set; }
 
@@ -55,9 +79,8 @@ public class BlockManager : MonoBehaviour
     int lastUsedIndex = 0;
     int lastUsedValue = 0;
     int blocksCreated = 0;
-    float spawnHeight = 50;
+    float spawnHeight = 80;
 
-    int blocksAddedToModel = 0;
     Dictionary<Guid, int> observedGUIDs = new Dictionary<Guid, int>();
 
     int[] possibleBlockValues = { 2, 4, 8, 16, 32, 64 };
@@ -66,17 +89,45 @@ public class BlockManager : MonoBehaviour
 
     #region public methods
 
-    /// <summary>
-    /// Update Score Handler receives the UpdateScoreEvent whose data is formatted in the following way
-    /// Index 0: score multiplier
-    /// Index 1: index on which the bonus should be applied
-    /// </summary>
-    /// <param name="floatReferences"></param>
-    public void ApplyScoreMultiplierHandler(List<FloatReference> floatReferences)
+    public void BlocksMergedEventHandler(BlockController existingBlock, BlockController blockOnTop)
     {
-        scoreMultiplier.Variable.Value = floatReferences[0];
-        HelperFunctions.Log("Apply Score Multiplier Handler handled");
-        columnIndex.Variable.Value = floatReferences[1];
+        existingBlock.gameObject.GetComponent<Renderer>().material.color = Color.green;
+        blockOnTop.gameObject.transform.DOMoveY(transform.position.y - 10, .5f);
+        blockOnTop.gameObject.GetComponent<Renderer>().material.color = Color.blue; //contact.Block.gameObject is the newest block in column we want to move this one
+        
+        if(existingBlock.Rb.isKinematic)
+        {
+            ChangeKinematic(existingBlock.Rb);
+        }
+        
+        RaiseUpdateScoreEvent(existingBlock.ListIndex, existingBlock.Value);
+        StartCoroutine(CountDownToDeletion(0.75f, blockOnTop.gameObject));
+    }
+
+    public void ManagerBlockRemovedEventHandler(BlockController existingBlock, BlockController blockOnTop)
+    {
+        ChangeKinematic(existingBlock.Rb);
+        StartCoroutine(CountDownToDeletion(1, blockOnTop.gameObject));
+    }
+
+    public void ManagerBlockAddedEventHandler(BlockController existingBlock, BlockController blockOnTop)
+    {
+        ChangeKinematic(existingBlock.Rb);
+    }
+
+    public void ManagerHorizaontalMatchFoundEventHandler(List<BlockController> matchedBlocks)
+    {
+        foreach(var b in matchedBlocks)
+        {
+            b.Rb.isKinematic = true;
+            b.GetComponent<Renderer>().material.color = Color.cyan;
+            b.transform.DOMoveY(b.transform.position.y - 50, 0.5f);
+        }
+
+        foreach(var b in matchedBlocks)
+        {
+            StartCoroutine(CountDownToDeletion(0.75f, b.gameObject));
+        }
     }
 
     #endregion
@@ -102,6 +153,7 @@ public class BlockManager : MonoBehaviour
         secondsUntilSpeedIncrease = secondsBetweenSpeedIncrease;
         secondsUntilBlockSpawn = secondsBetweenBlockSpawn;
         secondUntilObjectDelete = deleteInSeconds;
+        HelperFunctions.Log("Current gravity: " + Physics.gravity);
     }
 
     // Start is called before the first frame update
@@ -145,11 +197,13 @@ public class BlockManager : MonoBehaviour
             }
             
         }
+
+        Physics.gravity = new Vector3(0, defaultGravity * gravityControl, 0);
     }
 
     void InceaseSpeed()
     {
-        Physics.gravity += (Physics.gravity * gravityIncreasePercentage);
+        //Physics.gravity += (Physics.gravity * gravityIncreasePercentage);
     }
 
     void SpawnBlock()
@@ -159,25 +213,33 @@ public class BlockManager : MonoBehaviour
             int newIndex = 0;
             if (enableMultipleColumns)
             {
-                newIndex = GenerateRandomIndex(ref lastUsedIndex, columnBases.Length);
+                if(placeEvenly)
+                {
+                    newIndex = GenerateSequenticalIndex(columnBases.Length);
+                }
+                else
+                {
+                    newIndex = GenerateRandomIndex(ref lastUsedIndex, columnBases.Length);
+                } 
             }
             
-            
             Transform parent = columnBases[newIndex];
+            
             Vector3 newPosition = parent.position;
             newPosition.y += spawnHeight;
 
             GameObject block = GameObject.Instantiate(blockPrefab, newPosition, Quaternion.identity, parent);
-            //TMP_Text numberText = block.transform.Find("Canvas/Number").GetComponent<TMP_Text>();
-           
+
+            if (parent.childCount > 7)
+            {
+                ExecuteGameOverActions();
+            }
+
             BlockController blockController = block.GetComponent<BlockController>();
             blockController.ListIndex = newIndex;
             blockController.Value = GetRandomBlockValue(areMatchesPossible);
-            //numberText.text = blockController.Value.ToString();
-            //createdObjects[newIndex].Add(block);
-            //blocksCreated++;
+            BlockSpawnedEvent?.Invoke(blockController);
 
-            //print("Spawning Block of Value: " + blockController.Value);
         }
     }
 
@@ -188,21 +250,19 @@ public class BlockManager : MonoBehaviour
         {
             case ContactType.BlockContact:
                 BlockController existingBlock = contact.Collision.gameObject.GetComponent<BlockController>();
-
+                BlockOnBlockContactEvent?.Invoke(contact.Block);
+                RaiseRemoveComboEvent(contact.Block.ListIndex);
                 if (contact.Block.Value == existingBlock.Value)
                 {
-                    MergeBlocks(existingBlock, contact.Block);
+
                 }
                 else
                 {
                     int currentStack = contact.Block.ListIndex;
-                    UpdateBlockModel(contact.Block, contact.Block.ListIndex, false);
                 }
-                RaiseRemoveComboEvent(existingBlock.ListIndex);
                 break;
 
             case ContactType.CubeContact:
-
                 if(!contact.Block.Rb.isKinematic)
                 {
                     foreach (ContactPoint pt in contact.Collision.contacts)
@@ -211,20 +271,19 @@ public class BlockManager : MonoBehaviour
                     }
 
                     contact.Block.Rb.AddForce(Vector3.forward * 100000);
-                    UpdateBlockModel(contact.Block, contact.Block.ListIndex, true);
+                    BlockHitByCubeEvent?.Invoke(contact.Block);
+                    RaiseIncreaseComboEvent(contact.Block.ListIndex);
                 }
-                RaiseIncreaseComboEvent(contact.Block.ListIndex);
                 break;
 
             case ContactType.GroundContact:
-                //contact.Block.Rb.isKinematic = true;
-                UpdateBlockModel(contact.Block, contact.Block.ListIndex, false);
+                BlockOnGroundContactEvent?.Invoke(contact.Block);
+                RaiseRemoveComboEvent(contact.Block.ListIndex);
                 break;
 
             default:
                 break;
         }
-        
     }
 
     int GetRandomBlockValue(bool canBlocksMatch = true)
@@ -264,176 +323,25 @@ public class BlockManager : MonoBehaviour
         return index;
     }
 
-    void ResetPosition(GameObject g)
+    int GenerateSequenticalIndex(int length)
     {
-        float currentYPosition = g.transform.localPosition.y;
-        g.transform.localPosition = new Vector3(0, currentYPosition + 5, 0);
-        g.transform.localRotation = Quaternion.identity;
+        int indexToUse = lastUsedValue++;
+        if(lastUsedIndex >= length)
+        {
+            indexToUse = 0;
+        }
+
+        lastUsedIndex = indexToUse;
+        //print("Index to Use: " + indexToUse);
+        return indexToUse;
     }
 
-    void UpdateBlockModel(BlockController b, int index, bool removeOperation)
+    void ExecuteGameOverActions()
     {
-        int listCount = createdObjects[index].Count;
-        if (!observedGUIDs.ContainsKey(b.GUID))
-        {
-            observedGUIDs.Add(b.GUID, 1);
-            b.isTrackedInModel = true;
-            if (listCount - 1 >= 0)
-            {
-                GameObject lastBlock = createdObjects[index][listCount - 1];
-                lastBlock.GetComponent<Rigidbody>().isKinematic = true;
-            }
-            createdObjects[index].Add(b.gameObject);
-            //HelperFunctions.Log("Added block to model");
-            blocksAddedToModel++;
-            HelperFunctions.Log("Added " + blocksAddedToModel + " blocks to the model so far");
-        }
-        else if(removeOperation)
-        {
-            b.isTrackedInModel = false;
-            //print("Doing a Remove operation");
-            createdObjects[index].RemoveAt(listCount - 1);
-            int newCount = createdObjects[index].Count;
-            if(newCount > 0)
-            {
-                ChangeKinematic(createdObjects[index][newCount - 1].GetComponent<Rigidbody>());
-                //createdObjects[index][newCount - 1].GetComponent<Rigidbody>().isKinematic = false;
-            }
-            
-            HelperFunctions.Log("Removed block in column " + index + " with value of " + b.Value);
-        }
-        VerifyBlockModel();
-        //HelperFunctions.Log(createdObjects[index].Count + " block are at index " + index);
-    }
-
-    void VerifyBlockModel()
-    {
-        //what turns purple should be everything that is on the board
-        //HelperFunctions.Log("Printing Block Model before Verify Block Model");
-        //PrintBlockModel(createdObjects);
-        //HelperFunctions.Log("Starting Verify Block Model ===============");
-        for (int i = 0; i < columnBases.Length; i++)
-        {
-            for(int j = 0;  j < createdObjects[i].Count; j++)
-            {
-                if(createdObjects[i][j] == null)
-                {
-                    Debug.LogWarning("For some reason we're trying to access something that should have been deleted");
-                    HelperFunctions.LogListContent(createdObjects[i]);
-                }
-                else
-                {
-                    createdObjects[i][j].GetComponent<Renderer>().material.color = Color.magenta;
-                }
-                
-                if(j > 0)
-                {
-                    BlockController b = createdObjects[i][j - 1].GetComponent<BlockController>();
-                    BlockController b2 = createdObjects[i][j].GetComponent<BlockController>();
-                    if (b.Value == b2.Value)
-                    {
-                        //Casscading
-                        MergeBlocks(b, b2);
-                        UpdateBlockModel(b2, i, true);
-                        //DeleteBlock(b2);
-                    }
-                }
-
-            }
-        }
-
-        List<int> rowIndices = CheckForHorizontalMatches(createdObjects);
-        if(rowIndices.Count > 0)
-        {
-            ProcessEqualRows(rowIndices, createdObjects);
-        }
-
-        //HelperFunctions.Log("Exiting Verify Block Model ===============");
-    }
-
-    void PrintBlockModel(Dictionary<int, List<GameObject>> model)
-    {
-        foreach(KeyValuePair<int, List<GameObject>> entry in model)
-        {
-            if(model[entry.Key].Count > 0)
-            {
-                HelperFunctions.Log("Block values at index: " + entry.Key.ToString());
-            }
-            foreach(GameObject g in model[entry.Key])
-            {
-                HelperFunctions.Log(g.GetComponent<BlockController>().Value.ToString());
-            }
-        }
-    }
-
-    List<int> CheckForHorizontalMatches(Dictionary<int, List<GameObject>> model)
-    {
-        int maxHeight = GetTallestStackCount();
-        List<int> matchingRowIndices = new List<int>();
-
-        for(int i = 0; i < maxHeight; i++)
-        {
-            int columnValueTotal = 0;
-            int targetValue = 0;
-            bool wasExitedEarly = false;
-            for(int col = 0; col < columnBases.Length; col++)
-            {
-                //HelperFunctions.Log("Current i: " + i + " Current stack height: " + model[col].Count);
-                if (model[col].Count > i) //if current stack is higher than the i
-                {
-                    //HelperFunctions.Log("Col: " + col + " has a height greater than " + i);
-                    targetValue = model[col][i].GetComponent<BlockController>().Value;
-                    columnValueTotal += targetValue;
-                }
-                else //if current stack is not taller than i exit this inner most loop
-                {
-                    //HelperFunctions.Log("Col: " + col + " does not have a height greater than " + i);
-                    wasExitedEarly = true;
-                    break;
-                }
-            }
-
-            if(!wasExitedEarly)
-            {
-                if ((columnValueTotal / targetValue) == 5)
-                {
-                    HelperFunctions.Log("The row of " + i + "are all the same value");
-                    matchingRowIndices.Add(i);
-                }
-            }
-        }
-
-        return matchingRowIndices;
-    }
-
-    void ProcessEqualRows(List<int> rowIndices, Dictionary<int, List<GameObject>> model)
-    {
-        foreach(int index in rowIndices)
-        {
-            foreach (KeyValuePair<int, List<GameObject>> entry in model)
-            {
-                model[entry.Key][index].GetComponent<Renderer>().material.color = Color.cyan;
-                BlockController b = model[entry.Key][index].GetComponent<BlockController>();
-                b.Rb.constraints = RigidbodyConstraints.None;
-                b.Rb.AddForce(Vector3.right * 100000);
-                UpdateBlockModel(b, entry.Key, true);
-            }
-        }
-    }
-
-    int GetTallestStackCount()
-    {
-        int stackCount = 0;
-
-        foreach (KeyValuePair<int, List<GameObject>> entry in createdObjects)
-        {
-            if(createdObjects[entry.Key].Count > stackCount)
-            {
-                stackCount = createdObjects[entry.Key].Count;
-            }
-        }
-        HelperFunctions.Log("Tallest Stack: " + stackCount);
-        return stackCount;
+        canSpawnBlock = false;
+        GameOverEvent?.Invoke();
+        Transform parentCanvas = GameObject.FindGameObjectWithTag("canvas").transform;
+        GameObject.Instantiate(gameOverUiPrefab, parentCanvas);
     }
 
     void ChangeKinematic(Rigidbody rb)
@@ -441,23 +349,9 @@ public class BlockManager : MonoBehaviour
         StartCoroutine(CountDownToKinematicChangeCorou(.5f, rb));
     }
 
-    void MergeBlocks(BlockController existingBlock, BlockController blockOnTop)
+    void RaiseUpdateScoreEvent(int index, int score)
     {
-        existingBlock.gameObject.GetComponent<Renderer>().material.color = Color.green;
-        blockOnTop.gameObject.transform.DOMoveY(transform.position.y - 10, .5f);
-        blockOnTop.gameObject.GetComponent<Renderer>().material.color = Color.blue; //contact.Block.gameObject is the newest block in column we want to move this one
-
-        existingBlock.Value = blockOnTop.Value;
-        playerScore.Variable.Value += existingBlock.Value;
-        HelperFunctions.Log("I really hope the score multiplier event has been handled at this point");
-        RaiseUpdateScoreEvent(existingBlock.Value, scoreMultiplier);
-        VerifyBlockModel();
-        //DeleteBlock(blockOnTop.gameObject);
-    }
-
-    void RaiseUpdateScoreEvent(int score, float scoreMultiplier)
-    {
-        UpdateScoreEvent.Invoke(new List<FloatReference> { new FloatReference(score), new FloatReference(scoreMultiplier) }); 
+        UpdateScoreEvent.Invoke(new List<FloatReference> { new FloatReference(index), new FloatReference(score) }); 
     }
 
     void RaiseRemoveComboEvent(int index)
@@ -470,24 +364,6 @@ public class BlockManager : MonoBehaviour
         IncreaseComboLevel.Invoke(new List<FloatReference> { new FloatReference(index) });
     }
 
-    void DeleteBlock(BlockController g)
-    {
-        if(createdObjects[g.ListIndex].Remove(g.gameObject))
-        {
-            StartCoroutine(CountDownToDeletion(1.5f, g.gameObject));
-        }
-        else if(observedGUIDs.ContainsKey(g.GUID))
-        {
-            
-            //throw new Exception("Yo The removal did not complete hmmmmmmmmmmmmmmmmmmmmmm");
-        }
-        else
-        {
-            StartCoroutine(CountDownToDeletion(.2f, g.gameObject));
-        }
-        
-    }
-
     IEnumerator CountDownToDeletion(float seconds, GameObject g)
     {
         yield return HelperFunctions.Timer(seconds);
@@ -497,7 +373,7 @@ public class BlockManager : MonoBehaviour
     IEnumerator CountDownToKinematicChangeCorou(float seconds, Rigidbody rb)
     {
         yield return HelperFunctions.Timer(seconds);
-        rb.isKinematic = false;
+        rb.isKinematic = !rb.isKinematic;
      
     }
 }

@@ -28,6 +28,7 @@ public class CubeController : MonoBehaviour
     private Vector3 homePosition;
     private Vector3 initialVelocity;
 
+    private Vector3 startingCubeScreenPosition;
 
     private bool isInitSet = false;
     private bool isLauched = false;
@@ -36,6 +37,7 @@ public class CubeController : MonoBehaviour
     private float timeToTurn = 0.75f;
     private float currentTurnTime = 0;
     private static float cubeLaunchAngle = 45;
+
 
     #region Experimental
 
@@ -106,11 +108,14 @@ public class CubeController : MonoBehaviour
         dragStrength = 0;
         homePosition = gameObject.transform.position;
         lineRenCtrl = gameObject.GetComponent<LineRenderControler>();
+
+        
     }
 
     void Start()
     {
-        if(!this.gameObject.name.Contains("Clone"))
+        startingCubeScreenPosition = cam.WorldToScreenPoint(gameObject.transform.position);
+        if (!this.gameObject.name.Contains("Clone"))
         {
             GetComponent<Renderer>().material.color = Color.red;
         }
@@ -183,22 +188,24 @@ public class CubeController : MonoBehaviour
 
         if (SystemInfo.deviceType != DeviceType.Handheld)
         {
-            float mouseDeltaY = initialPointerY - Input.mousePosition.y;
+            //float mouseDeltaY = initialPointerY - Input.mousePosition.y;
 
-            dragStrength = (initialPointerY + mouseDeltaY);
-            //print("Mouse Delta: " + mouseDeltaY);
+            dragStrength = GetDragStrength(Input.mousePosition.y);
             RotateWithPointer(Input.mousePosition.x);
             UpdateLaunchRotationAngle(Input.mousePosition.y);
+            multiplier = CalculateDynamicMultiplier(dragStrength);
         }
         else
         {
-            float pointerDeltaY = initialPointerY - Input.GetTouch(0).position.y;
-            dragStrength = (initialPointerY + pointerDeltaY);
+            //float pointerDeltaY = initialPointerY - Input.GetTouch(0).position.y;
+            dragStrength = GetDragStrength(Input.GetTouch(0).position.y);
 
             RotateWithPointer(Input.GetTouch(0).position.x);
             UpdateLaunchRotationAngle(Input.GetTouch(0).position.y);
+            multiplier = CalculateDynamicMultiplier(dragStrength);
         }
-
+        //HelperFunctions.Log("Multiplier: " + multiplier);
+        //HelperFunctions.Log("Final Drag Strength: " + dragStrength * multiplier);
         lineRenCtrl.CalculateProjectilePath();
         
     }
@@ -206,6 +213,15 @@ public class CubeController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         isLauched = false;
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject.tag != "ground")
+        {
+            RespawnCube();
+        }
+            
     }
 
     private void OnMouseUp()
@@ -256,7 +272,6 @@ public class CubeController : MonoBehaviour
         float delta = HelperFunctions.Map(-32, 32, Screen.width * 0.2f, 
             HelperFunctions.GetPercentageOf(20, Screen.width), reversedPointerX);
 
-        print("Mouse X Delta: " + delta);
         Quaternion newRotation = Quaternion.Euler(0, ClampedCubeRotation(delta), 0);
         transform.rotation = Quaternion.Slerp(newRotation, 
             transform.rotation, percentTurned); //Quaternion.LookRotation(cam.ScreenToWorldPoint(Input.mousePosition));
@@ -271,13 +286,40 @@ public class CubeController : MonoBehaviour
     {
         //this is to show the position as a higher number the closer it is to the bottom of the screen
         float reversePointerPosition = Mathf.Abs(pointerPositionY - Screen.height);
-        float reverseCubePositionY = Mathf.Abs(cam.WorldToScreenPoint(gameObject.transform.position).y - Screen.height);
+        float reverseCubePositionY = Mathf.Abs(startingCubeScreenPosition.y - Screen.height);
         float endOfScreenY = Screen.height;
 
         //HelperFunctions.LogListContent(new List<string>{"Reserve Pointer Pos: " + reversePointerPosition,
         //    "Cube Position: " + reverseCubePositionY, "End of screen: " + endOfScreenY});
 
         cubeLaunchAngle = HelperFunctions.Map(15, 69, reverseCubePositionY, endOfScreenY, reversePointerPosition);
+    }
+
+    private float CalculateDynamicMultiplier(float dragStr)
+    {
+        if (SystemInfo.deviceType != DeviceType.Handheld)
+        {
+            return HelperFunctions.Map(25, 100, 0, startingCubeScreenPosition.y, dragStr);
+        }
+        else
+        {
+            return HelperFunctions.Map(25, 75, 0, startingCubeScreenPosition.y, dragStr);
+        }
+    }
+
+    private float GetDragStrength(float pointerPositionY)
+    {
+        float cubePositionY = startingCubeScreenPosition.y;
+        //HelperFunctions.Log("Normal Position: " + pointerPositionY);
+
+        float dragStrength = cubePositionY - pointerPositionY;
+        if(dragStrength < 0)
+        {
+            dragStrength = 0;
+        }
+
+        //HelperFunctions.Log("Drag Strength: " + dragStrength);
+        return dragStrength;
     }
 
     public static void UpdateVectorRotationAngle(float angle)

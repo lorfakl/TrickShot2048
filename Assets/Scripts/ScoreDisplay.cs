@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Utilities;
 
 public class ScoreDisplay : MonoBehaviour
 {
@@ -9,9 +10,11 @@ public class ScoreDisplay : MonoBehaviour
     FloatVariable currentScore;
     [SerializeField]
     TMP_Text scoreDisplayText;
+    [SerializeField]
+    ComboUIUpdater[] comboUIUpdaters;
 
     float score;
- 
+    
 
 
     /// <summary>
@@ -22,8 +25,12 @@ public class ScoreDisplay : MonoBehaviour
     /// <param name="relevantVariables"></param>
     public void UpdateScoreHandler(List<FloatReference> relevantVariables)
     {
-        
-        score += (relevantVariables[0].Value * relevantVariables[1]);
+        HelperFunctions.Log("New score incomming base value of: " + relevantVariables[1].Value
+            + " at index " + relevantVariables[0].Value);
+        float baseScore = relevantVariables[1].Value;
+        int comboIndex = (int)relevantVariables[0].Value;
+        float multiplier = comboUIUpdaters[comboIndex].ComboMultiplier;
+        score += (baseScore * multiplier);
 
         scoreDisplayText.text = "Score: " + score;
     }

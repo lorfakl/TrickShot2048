@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ground
   - block
+  - canvas
   layers:
   - Default
   - TransparentFX

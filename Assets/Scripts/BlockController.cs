@@ -155,7 +155,7 @@ public class BlockController : MonoBehaviour
 
     void EvaluateChange(ContactTypes contact)
     {
-        print(contact.CType);
+        //print(contact.CType);
         contactEvent.NotifyListeners(contact);
     }
 
@@ -163,5 +163,10 @@ public class BlockController : MonoBehaviour
     {
         multiOfTwo += v;
         valueText.text = multiOfTwo.ToString(); 
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
     }
 }

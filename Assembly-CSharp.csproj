@@ -56,25 +56,42 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Junk\dssdd.cs" />
     <Compile Include="Assets\Scripts\LineRenderControler.cs" />
     <Compile Include="Assets\Scripts\ComboUIUpdater.cs" />
+    <Compile Include="Assets\Scripts\Junk\BlockVariable.cs" />
+    <Compile Include="Assets\Scripts\Junk\sdafsf.cs" />
     <Compile Include="Assets\Scripts\AngleControl.cs" />
     <Compile Include="Assets\Scripts\EventSOs\GameEvent.cs" />
+    <Compile Include="Assets\Scripts\BackendBlockData.cs" />
     <Compile Include="Assets\Scripts\RaiseScoreEvent.cs" />
     <Compile Include="Assets\Scripts\FloatVariable\FloatReference.cs" />
     <Compile Include="Assets\TestingRotateExample.cs" />
     <Compile Include="Assets\Scripts\GameEventListener.cs" />
     <Compile Include="Assets\Scripts\BlockContantactEvent.cs" />
+    <Compile Include="Assets\Scripts\Grid.cs" />
+    <Compile Include="Assets\Scripts\Junk\dfdsfs.cs" />
+    <Compile Include="Assets\Scripts\Junk\ffff.cs" />
     <Compile Include="Assets\Scripts\TargetSpawner.cs" />
     <Compile Include="Assets\Scripts\Deleter.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\FloatVariable\FloatVariable.cs" />
+    <Compile Include="Assets\Scripts\Junk\ihatyo.cs" />
     <Compile Include="Assets\Scripts\ContactTypes.cs" />
+    <Compile Include="Assets\Scripts\Junk\SDFDSFFF.cs" />
     <Compile Include="Assets\Scripts\TargetScript.cs" />
+    <Compile Include="Assets\Scripts\GridTesting.cs" />
+    <Compile Include="Assets\Scripts\Junk\f.cs" />
     <Compile Include="Assets\Scripts\BlockManager.cs" />
     <Compile Include="Assets\Scripts\CubeController.cs" />
     <Compile Include="Assets\Scripts\BlockController.cs" />
     <Compile Include="Assets\Scripts\ScoreDisplay.cs" />
+    <Compile Include="Assets\Scripts\Junk\e5.cs" />
+    <Compile Include="Assets\Scripts\Junk\ewe.cs" />
+    <Compile Include="Assets\Scripts\Junk\iufrdf.cs" />
+    <Compile Include="Assets\Scripts\Junk\wasitalladream.cs" />
+    <Compile Include="Assets\Scripts\BlockCtrlWrapper.cs" />
+    <Compile Include="Assets\Scripts\GameOver.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

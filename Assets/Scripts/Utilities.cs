@@ -99,14 +99,15 @@ namespace Utilities
 
         #region Debug Utility Functions
 
+
         public static void Error(string msg)
         {
             throw new Exception(msg);
         }
 
-        public static void Log(string msg)
+        public static void Log<T>(T msg)
         {
-            Debug.Log(DateTime.Now + ": " + msg);
+            Debug.Log(DateTime.Now + ": " + msg.ToString());
         }
 
         public static void LogListContent<T>(string msg, List<T> list)
@@ -163,6 +164,35 @@ namespace Utilities
         #endregion
 
         #region Misc
+        public static Vector3 GetMouseWorldPosition()
+        {
+            
+            return Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 1f));
+        }
+
+        public static Vector3 GetMouseWorldPosition(Camera cam)
+        {
+            return cam.ScreenToWorldPoint(Input.mousePosition);
+        }
+
+
+        public static TextMesh CreateWorldText(string text, Transform parent, Vector3 localpos, TextAnchor textAnchor = TextAnchor.MiddleCenter, TextAlignment textAlignment = TextAlignment.Center, int fontsize = 40)
+        {
+            GameObject gObj = new GameObject("World_Text", typeof(TextMesh));
+            Transform transform = gObj.transform;
+            transform.SetParent(parent, false);
+            transform.localPosition = localpos;
+            TextMesh textMesh = gObj.GetComponent<TextMesh>();
+            textMesh.anchor = textAnchor;
+            textMesh.alignment = textAlignment;
+            textMesh.text = text;
+            textMesh.fontSize = fontsize;
+            
+            textMesh.color = Color.white;
+            textMesh.GetComponent<MeshRenderer>().sortingOrder = 5;
+            return textMesh;
+        }
+
         public static Color RandomColor()
         {
             return colors[UnityEngine.Random.Range(0, colors.Length)];

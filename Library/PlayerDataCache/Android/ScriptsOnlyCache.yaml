@@ -2,18 +2,24 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - AngleControl
+    - BackendBlockData
+    - BlockContantactEvent
+    - BlockController
+    - BlockManager
+    - ComboUIUpdater
     - CubeController
+    - FloatVariable
+    - GameEvent
+    - GameEventListener
+    - GameOver
     - LineRenderControler
-    - TargetScript
-    - TargetSpawner
+    - ScoreDisplay
     DOTween.dll:
     - DG.Tweening.Core.DOTweenSettings
     PlayFab.dll:
     - PlayFabSharedSettings
     PlayFabEditorExtensions.dll:
     - PlayFab.PfEditor.PlayFabEditorPrefsSO
-    Unity.Mobile.AndroidLogcat.Editor.dll:
-    - Unity.Android.Logcat.AndroidLogcatManager
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
     Unity.TextMeshPro.dll:
@@ -36,7 +42,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
   sceneClasses:
-    Assets/Scenes/SampleScene.unity:
+    Assets/Scenes/gameScene.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -70,45 +76,61 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 1552}
+      Script: {instanceID: 1514}
     - Class: 114
-      Script: {instanceID: 2078}
+      Script: {instanceID: 1554}
     - Class: 114
-      Script: {instanceID: 2206}
+      Script: {instanceID: 2082}
     - Class: 114
-      Script: {instanceID: 2472}
+      Script: {instanceID: 2210}
     - Class: 114
-      Script: {instanceID: 2662}
+      Script: {instanceID: 2346}
     - Class: 114
-      Script: {instanceID: 2706}
+      Script: {instanceID: 2482}
     - Class: 114
-      Script: {instanceID: 2926}
+      Script: {instanceID: 2714}
     - Class: 114
-      Script: {instanceID: 3240}
+      Script: {instanceID: 2800}
     - Class: 114
-      Script: {instanceID: 3512}
+      Script: {instanceID: 2910}
     - Class: 114
-      Script: {instanceID: 3864}
+      Script: {instanceID: 2938}
     - Class: 114
-      Script: {instanceID: 4094}
+      Script: {instanceID: 3252}
     - Class: 114
-      Script: {instanceID: 4642}
+      Script: {instanceID: 3526}
     - Class: 114
-      Script: {instanceID: 4720}
+      Script: {instanceID: 3882}
     - Class: 114
-      Script: {instanceID: 4786}
+      Script: {instanceID: 3976}
     - Class: 114
-      Script: {instanceID: 4954}
+      Script: {instanceID: 4114}
     - Class: 114
-      Script: {instanceID: 5238}
+      Script: {instanceID: 4348}
     - Class: 114
-      Script: {instanceID: 5380}
+      Script: {instanceID: 4666}
     - Class: 114
-      Script: {instanceID: 5684}
+      Script: {instanceID: 4746}
     - Class: 114
-      Script: {instanceID: 6490}
+      Script: {instanceID: 4980}
     - Class: 114
-      Script: {instanceID: 7000}
+      Script: {instanceID: 5266}
+    - Class: 114
+      Script: {instanceID: 5408}
+    - Class: 114
+      Script: {instanceID: 5674}
+    - Class: 114
+      Script: {instanceID: 5714}
+    - Class: 114
+      Script: {instanceID: 6804}
+    - Class: 114
+      Script: {instanceID: 7038}
+    - Class: 114
+      Script: {instanceID: 7086}
+    - Class: 114
+      Script: {instanceID: 7334}
+    - Class: 114
+      Script: {instanceID: 46350}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 120
@@ -132,6 +154,12 @@ ScriptsOnlyBuild:
   scriptHashData:
   - hash:
       serializedVersion: 2
+      Hash: ae83e830e7a90c0aff918c4c2e520825
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: GraphicRaycaster
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UIElements
@@ -142,6 +170,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Image
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: dssdd
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -240,10 +274,28 @@ ScriptsOnlyBuild:
     className: RawImage
   - hash:
       serializedVersion: 2
+      Hash: 9a8e6eea36c59d366be49dfd68f92966
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ComboUIUpdater
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnBecameVisibleMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 00908b5687d1c073f789bdce146db2a5
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: BlockVariable
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: sdafsf
   - hash:
       serializedVersion: 2
       Hash: cc4274b586df3c02688bac01b88bd16c
@@ -294,12 +346,6 @@ ScriptsOnlyBuild:
     className: TestRunCallbackListener
   - hash:
       serializedVersion: 2
-      Hash: ae83e830e7a90c0aff918c4c2e520825
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: GraphicRaycaster
-  - hash:
-      serializedVersion: 2
       Hash: f40fedccd4adbc76605bea6d67537e4b
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
@@ -342,10 +388,22 @@ ScriptsOnlyBuild:
     className: TestResultRendererCallback
   - hash:
       serializedVersion: 2
+      Hash: 89e9486f72f09a532a6630882483c89f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: GameEvent
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnDropdownValueChangedMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 714f7c8cc51af5578136b748693ddf9d
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: BackendBlockData
   - hash:
       serializedVersion: 2
       Hash: 0fd6822f6177297bd0eb4d83cc7a9030
@@ -462,6 +520,12 @@ ScriptsOnlyBuild:
     className: ScriptGraphAsset
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: RaiseScoreEvent
+  - hash:
+      serializedVersion: 2
       Hash: bc8d5a16cdc0bb11217587af2000e9e4
     assemblyName: PlayFab.dll
     namespaceName: 
@@ -552,6 +616,12 @@ ScriptsOnlyBuild:
     className: DictionaryAsset
   - hash:
       serializedVersion: 2
+      Hash: 3bf3d8552f60b7bdf78c6854fc9b604b
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: GameEventListener
+  - hash:
+      serializedVersion: 2
       Hash: 6980e81ddc615a861309d2d659cc3760
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
@@ -601,6 +671,12 @@ ScriptsOnlyBuild:
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: dfdsfs
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnEndDragMessageListener
@@ -646,6 +722,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: HorizontalLayoutGroup
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ffff
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -708,6 +790,12 @@ ScriptsOnlyBuild:
     className: EnumerableTestState
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: Deleter
+  - hash:
+      serializedVersion: 2
       Hash: a1aa98c78061c6f03a8c124cda576e67
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
@@ -736,6 +824,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnMouseUpAsButtonMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 87688f03e3ecc3fce3146df89657a521
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: FloatVariable
   - hash:
       serializedVersion: 2
       Hash: 748dd2a2a28da4e618912da5ac45684b
@@ -796,6 +890,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: PlayableTrack
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ihatyo
   - hash:
       serializedVersion: 2
       Hash: 3164bc883ff663a5cdb32d1ef7e7c0c5
@@ -876,6 +976,12 @@ ScriptsOnlyBuild:
     className: Dropdown
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: SDFDSFFF
+  - hash:
+      serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
@@ -886,6 +992,12 @@ ScriptsOnlyBuild:
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: TargetScript
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: GridTesting
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -900,13 +1012,19 @@ ScriptsOnlyBuild:
     className: ControlTrack
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: f
+  - hash:
+      serializedVersion: 2
       Hash: 040dd48e3a027d5424519a5fa2009df4
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: ScrollRect
   - hash:
       serializedVersion: 2
-      Hash: e449611df43498a8d827428504c5efd1
+      Hash: f1933f014fe9da18cbc26192737e17b7
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: BlockManager
@@ -960,7 +1078,7 @@ ScriptsOnlyBuild:
     className: CubeController
   - hash:
       serializedVersion: 2
-      Hash: 17f0f80a24f386c487f68097e4ed9b2a
+      Hash: aabf8bb619d9933db894212b61021357
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: BlockController
@@ -990,11 +1108,47 @@ ScriptsOnlyBuild:
     className: TouchInputModule
   - hash:
       serializedVersion: 2
+      Hash: 0d6e2aa4c46baa8fbc51b89fb087d81c
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ScoreDisplay
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: e5
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ewe
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: iufrdf
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: wasitalladream
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: GameOver
   platform: 13
   scenePathNames:
-  - Assets/Scenes/SampleScene.unity
-  playerPath: C:/Users/apple/Documents/experimental.apk
+  - Assets/Scenes/gameScene.unity
+  playerPath: C:/Users/apple/Documents/concept1.apk
