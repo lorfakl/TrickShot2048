@@ -13,9 +13,12 @@ public class ScoreDisplay : MonoBehaviour
     [SerializeField]
     ComboUIUpdater[] comboUIUpdaters;
 
-    float score;
-    
+    public static float score = 0;
 
+    private void Update()
+    {
+        scoreDisplayText.text = "Score: " + score;
+    }
 
     /// <summary>
     /// Update Score Handler receives the UpdateScoreEvent whose data is formatted in the following way
@@ -34,4 +37,16 @@ public class ScoreDisplay : MonoBehaviour
 
         scoreDisplayText.text = "Score: " + score;
     }
+
+    public void UpdateScoreTextHandler(List<FloatReference> relevantVariables)
+    {
+        HelperFunctions.Log("New score incomming value of: " + relevantVariables[0].Value);
+        
+        int scoreChange = (int)relevantVariables[0].Value;
+        
+        score += scoreChange;
+
+        scoreDisplayText.text = "Score: " + score;
+    }
+
 }

@@ -13,6 +13,12 @@ using System.Collections;
 namespace ProjectSpecificGlobals
 {
     public enum ContactType { GroundContact, CubeContact, BlockContact };
+
+    public static class MobileSettings
+    {
+        public static int dragPower = 250;
+        public static int multiplier = 2;
+    }
 }
 
 /// <summary>
@@ -24,7 +30,7 @@ namespace Utilities
     public static class HelperFunctions
     {
         private static string conn = "URI=file:" + Application.dataPath + "/CardDataBase.db";
-        private static Color[] colors = { Color.black, Color.gray, Color.clear, Color.blue, Color.cyan, Color.red, Color.green, Color.magenta, Color.yellow };
+        public static Color[] colors = { Color.black, Color.gray, new Color(32, 123, 11), Color.blue, Color.cyan, Color.red, Color.green, Color.magenta, Color.yellow, new Color(137, 100, 4), new Color(115, 26, 113), new Color(56, 209, 143), new Color(92, 173, 81) };
 
         #region Vector3 Operations
 
@@ -102,7 +108,7 @@ namespace Utilities
 
         public static void Error(string msg)
         {
-            throw new Exception(msg);
+            Debug.LogError(msg);
         }
 
         public static void Log<T>(T msg)

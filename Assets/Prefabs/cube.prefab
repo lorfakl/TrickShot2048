@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 7393474645367780303}
   - component: {fileID: 7393474645367780300}
   m_Layer: 0
-  m_Name: cube 1
+  m_Name: cube
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -137,8 +137,15 @@ MonoBehaviour:
   LaunchStatus:
     m_PersistentCalls:
       m_Calls: []
+  ComboState:
+    m_PersistentCalls:
+      m_Calls: []
   dragStrength: 0
   multiplier: 100
+  turnSensitivity: 0
+  startPos: {x: 0, y: 0}
+  direction: {x: 0, y: 0}
+  m_Text: {fileID: 0}
 --- !u!120 &7393474645367780303
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -236,7 +243,7 @@ LineRenderer:
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_UseWorldSpace: 1
+  m_UseWorldSpace: 0
   m_Loop: 0
 --- !u!114 &7393474645367780300
 MonoBehaviour:
@@ -250,6 +257,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56656d49529768240a75e0f62629abe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  numOfPoints: 0
+  timeInterval: 0
 --- !u!1 &7393474647258261611
 GameObject:
   m_ObjectHideFlags: 0

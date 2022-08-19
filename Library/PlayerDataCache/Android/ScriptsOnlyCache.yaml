@@ -8,12 +8,16 @@ ScriptsOnlyBuild:
     - BlockManager
     - ComboUIUpdater
     - CubeController
+    - CubeManager
     - FloatVariable
     - GameEvent
     - GameEventListener
     - GameOver
     - LineRenderControler
+    - RotateSkybox
     - ScoreDisplay
+    - SettingsButton
+    - SimpleBlock
     DOTween.dll:
     - DG.Tweening.Core.DOTweenSettings
     PlayFab.dll:
@@ -39,8 +43,10 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
+    - UnityEngine.UI.RawImage
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
+    - UnityEngine.UI.Toggle
   sceneClasses:
     Assets/Scenes/gameScene.unity:
     - Class: 1
@@ -69,6 +75,10 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 82
+      Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 89
       Script: {instanceID: 0}
     - Class: 104
@@ -78,59 +88,71 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1514}
     - Class: 114
-      Script: {instanceID: 1554}
+      Script: {instanceID: 1516}
     - Class: 114
-      Script: {instanceID: 2082}
+      Script: {instanceID: 1518}
     - Class: 114
-      Script: {instanceID: 2210}
+      Script: {instanceID: 2014}
     - Class: 114
-      Script: {instanceID: 2346}
+      Script: {instanceID: 2086}
     - Class: 114
-      Script: {instanceID: 2482}
+      Script: {instanceID: 2214}
     - Class: 114
-      Script: {instanceID: 2714}
+      Script: {instanceID: 2216}
     - Class: 114
-      Script: {instanceID: 2800}
+      Script: {instanceID: 2350}
     - Class: 114
-      Script: {instanceID: 2910}
+      Script: {instanceID: 2486}
     - Class: 114
-      Script: {instanceID: 2938}
+      Script: {instanceID: 2718}
     - Class: 114
-      Script: {instanceID: 3252}
+      Script: {instanceID: 2804}
     - Class: 114
-      Script: {instanceID: 3526}
+      Script: {instanceID: 2914}
     - Class: 114
-      Script: {instanceID: 3882}
+      Script: {instanceID: 2942}
     - Class: 114
-      Script: {instanceID: 3976}
+      Script: {instanceID: 3258}
     - Class: 114
-      Script: {instanceID: 4114}
+      Script: {instanceID: 3532}
     - Class: 114
-      Script: {instanceID: 4348}
+      Script: {instanceID: 3888}
     - Class: 114
-      Script: {instanceID: 4666}
+      Script: {instanceID: 3984}
     - Class: 114
-      Script: {instanceID: 4746}
+      Script: {instanceID: 4054}
     - Class: 114
-      Script: {instanceID: 4980}
+      Script: {instanceID: 4126}
     - Class: 114
-      Script: {instanceID: 5266}
+      Script: {instanceID: 4360}
     - Class: 114
-      Script: {instanceID: 5408}
+      Script: {instanceID: 4676}
     - Class: 114
-      Script: {instanceID: 5674}
+      Script: {instanceID: 4756}
     - Class: 114
-      Script: {instanceID: 5714}
+      Script: {instanceID: 4992}
     - Class: 114
-      Script: {instanceID: 6804}
+      Script: {instanceID: 4998}
     - Class: 114
-      Script: {instanceID: 7038}
+      Script: {instanceID: 5280}
     - Class: 114
-      Script: {instanceID: 7086}
+      Script: {instanceID: 5378}
     - Class: 114
-      Script: {instanceID: 7334}
+      Script: {instanceID: 5424}
     - Class: 114
-      Script: {instanceID: 46350}
+      Script: {instanceID: 5690}
+    - Class: 114
+      Script: {instanceID: 5730}
+    - Class: 114
+      Script: {instanceID: 6458}
+    - Class: 114
+      Script: {instanceID: 6824}
+    - Class: 114
+      Script: {instanceID: 7060}
+    - Class: 114
+      Script: {instanceID: 7108}
+    - Class: 114
+      Script: {instanceID: 7356}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 120
@@ -160,16 +182,22 @@ ScriptsOnlyBuild:
     className: GraphicRaycaster
   - hash:
       serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+      Hash: bcaee4c2a83047257b5f47d6ed264b75
     assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UIElements
-    className: PanelRaycaster
+    namespaceName: UnityEngine.UI
+    className: Toggle
   - hash:
       serializedVersion: 2
       Hash: a6e561615949734e9f12f9b61661f43e
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Image
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UIElements
+    className: PanelRaycaster
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -224,6 +252,12 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Notifications.Android.dll
     namespaceName: Unity.Notifications.Android
     className: AndroidReceivedNotificationMainThreadDispatcher
+  - hash:
+      serializedVersion: 2
+      Hash: 5bddb32bcb848f51c6efb9a0b86ba855
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: RotateSkybox
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -454,6 +488,12 @@ ScriptsOnlyBuild:
     className: VariablesAsset
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: iufrdf
+  - hash:
+      serializedVersion: 2
       Hash: 2574ac7d50617d23cdefe4ad22f5e1ad
     assemblyName: Unity.VisualScripting.Flow.dll
     namespaceName: Unity.VisualScripting
@@ -610,6 +650,12 @@ ScriptsOnlyBuild:
     className: UnityOnJointBreak2DMessageListener
   - hash:
       serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: dsafdsfasdfdsafadsfs
+  - hash:
+      serializedVersion: 2
       Hash: 2574ac7d50617d23cdefe4ad22f5e1ad
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
@@ -626,6 +672,18 @@ ScriptsOnlyBuild:
     assemblyName: Unity.TextMeshPro.dll
     namespaceName: TMPro
     className: TMP_SubMeshUI
+  - hash:
+      serializedVersion: 2
+      Hash: 70b3bf73df39993c075a63f7a6d113c8
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: SettingsButton
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: ewe
   - hash:
       serializedVersion: 2
       Hash: fd68d84f33fad85aac38f2739c0ee270
@@ -700,12 +758,6 @@ ScriptsOnlyBuild:
     className: TMP_InputField
   - hash:
       serializedVersion: 2
-      Hash: bcaee4c2a83047257b5f47d6ed264b75
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: Toggle
-  - hash:
-      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
@@ -749,6 +801,12 @@ ScriptsOnlyBuild:
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: e5
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnBecameInvisibleMessageListener
@@ -776,6 +834,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Text
+  - hash:
+      serializedVersion: 2
+      Hash: ffcae59d220a6c3e406e488deee8b0fe
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: GameOver
   - hash:
       serializedVersion: 2
       Hash: 2574ac7d50617d23cdefe4ad22f5e1ad
@@ -812,6 +876,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: AspectRatioFitter
+  - hash:
+      serializedVersion: 2
+      Hash: 6cdc20d8d50d03e179e36e931b0e4f4b
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: SimpleBlock
   - hash:
       serializedVersion: 2
       Hash: 760787567e1b60d64a3e421ab83ee14a
@@ -976,6 +1046,12 @@ ScriptsOnlyBuild:
     className: Dropdown
   - hash:
       serializedVersion: 2
+      Hash: 636d6888de89a77e4214e9fb3506aa73
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: CubeManager
+  - hash:
+      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
@@ -1037,6 +1113,12 @@ ScriptsOnlyBuild:
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: wasitalladream
+  - hash:
+      serializedVersion: 2
+      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnParticleCollisionMessageListener
@@ -1072,7 +1154,7 @@ ScriptsOnlyBuild:
     className: TMP_ScrollbarEventHandler
   - hash:
       serializedVersion: 2
-      Hash: ce81e4073bdef15c59e380407ff8d5af
+      Hash: 52c0537af1a85d9fca63145915ba2f9c
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: CubeController
@@ -1118,37 +1200,7 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
-  - hash:
-      serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: e5
-  - hash:
-      serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: ewe
-  - hash:
-      serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: iufrdf
-  - hash:
-      serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: wasitalladream
-  - hash:
-      serializedVersion: 2
-      Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: GameOver
   platform: 13
   scenePathNames:
   - Assets/Scenes/gameScene.unity
-  playerPath: C:/Users/apple/Documents/concept1.apk
+  playerPath: C:/Users/apple/Documents/TrickShot2048.apk

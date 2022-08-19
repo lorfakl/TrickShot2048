@@ -15,7 +15,7 @@ MonoBehaviour:
   relevantVariables:
   - UseConstant: 0
     ConstantValue: 2
-    Variable: {fileID: 0}
+    Variable: {fileID: 11400000, guid: e586d184aa9f9e247a3cfe5b4bac5a40, type: 2}
   - UseConstant: 0
     ConstantValue: 1
-    Variable: {fileID: 0}
+    Variable: {fileID: 11400000, guid: 055242182b26a8d4eb6b131b164f58a0, type: 2}

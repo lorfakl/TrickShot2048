@@ -91,7 +91,6 @@ GameObject:
   - component: {fileID: 5093522085121876377}
   - component: {fileID: 3851098508492260989}
   - component: {fileID: 4159909925199905166}
-  - component: {fileID: 6210017222053976404}
   m_Layer: 5
   m_Name: ReloadGame
   m_TagString: Untagged
@@ -201,7 +200,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6210017222053976404}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GameOver, Assembly-CSharp
         m_MethodName: ReloadScene
         m_Mode: 1
@@ -213,18 +212,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6210017222053976404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1781017755046191878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b8be4e30a90059489ca89a2efec5b54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2189846478772248436
 GameObject:
   m_ObjectHideFlags: 0

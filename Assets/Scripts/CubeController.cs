@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectSpecificGlobals;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using Utilities;
@@ -8,22 +9,26 @@ using Utilities;
 public class CubeController : MonoBehaviour
 {
     public Rigidbody rb;
-    public GameObject cubePrefab;
-    public Button respwn;
     public Camera cam;
     public float acceleration = 10;
+    public static float dynamicMultiplierMax;
+    public static float slideThreshold;
 
     public UnityEvent<bool> LaunchStatus = new UnityEvent<bool>();
     public UnityEvent<bool> ComboState = new UnityEvent<bool>();
 
     [SerializeField]
-    private float dragStrength;
+    private float slideStrength = 150;
+
     [SerializeField]
-    private float multiplier;
+    private float dragStrength;
+    
     [SerializeField]
     private float turnSensitivity;
 
     private LineRenderControler lineRenCtrl;
+
+    private float multiplier;
 
     private Vector3 homePosition;
     private Vector3 initialVelocity;
@@ -32,8 +37,6 @@ public class CubeController : MonoBehaviour
 
     private bool isInitSet = false;
     private bool isLauched = false;
-    private float initialPointerY;
-    private float prevPointerX;
     private float timeToTurn = 0.75f;
     private float currentTurnTime = 0;
     private static float cubeLaunchAngle = 45;
@@ -50,7 +53,7 @@ public class CubeController : MonoBehaviour
     void Touch()
     {
         //Update the Text on the screen depending on current TouchPhase, and the current direction vector
-        m_Text.text = "Touch : " + "at position " + direction;
+        //m_Text.text = "Touch : " + "at position " + direction;
 
         // Track a single touch as a direction control.
         if (Input.touchCount > 0)
@@ -79,7 +82,6 @@ public class CubeController : MonoBehaviour
                 case TouchPhase.Ended:
                     // Report that the touch has ended when it ends
                     message = "Ending ";
-                    prevPointerX = touch.position.x;
                     break;
             }
 
@@ -90,6 +92,10 @@ public class CubeController : MonoBehaviour
 
     #endregion
 
+    public bool IsLaunched
+    {
+        get { return isLauched; }
+    }
 
     public Vector3 InitialVelocity
     {
@@ -101,6 +107,11 @@ public class CubeController : MonoBehaviour
         get { return homePosition; }
     }
 
+    public Vector3 CurrentPosition
+    {
+        get { return gameObject.transform.position; }
+    }
+
     #region Unity Callbacks
 
     void Awake()
@@ -108,8 +119,17 @@ public class CubeController : MonoBehaviour
         dragStrength = 0;
         homePosition = gameObject.transform.position;
         lineRenCtrl = gameObject.GetComponent<LineRenderControler>();
+        cam = Camera.main;
 
-        
+        if (SystemInfo.deviceType != DeviceType.Handheld)
+        {
+            dynamicMultiplierMax = 25;
+        }
+        else
+        {
+            dynamicMultiplierMax = 5;
+        }
+        slideThreshold = 15;
     }
 
     void Start()
@@ -117,53 +137,45 @@ public class CubeController : MonoBehaviour
         startingCubeScreenPosition = cam.WorldToScreenPoint(gameObject.transform.position);
         if (!this.gameObject.name.Contains("Clone"))
         {
-            GetComponent<Renderer>().material.color = Color.red;
+            //GetComponent<Renderer>().material.color = Color.red;
         }
-        
-        respwn.onClick.AddListener(RespawnCube);
+        CubeManager.HomePosition = gameObject.transform.position;
+        //respwn.onClick.AddListener(RespawnCube);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //print("Mos Post" + Input.mousePosition);
-        if(Input.GetKeyUp(KeyCode.Space))
-        {
-            GameObject newCube = Instantiate(cubePrefab, homePosition, Quaternion.identity);
-            newCube.GetComponent<Renderer>().material.color = HelperFunctions.RandomColor();
-            Destroy(this.gameObject);
-
-        }
-
-        if (SystemInfo.deviceType == DeviceType.Handheld)
+        /*if (SystemInfo.deviceType == DeviceType.Handheld)
         {
             Touch();
-        }
+        }*/
 
         currentTurnTime += Time.fixedDeltaTime;
         if (currentTurnTime > timeToTurn)
         {
             currentTurnTime = 0;
         }
-
-        
-        //print("Mouse Position: " + Distance(Input.mousePosition, transform.position));
-        //print("Cube position" + transform.localPosition);
     }
 
     private void FixedUpdate()
     {
-        if(isLauched)
+        if(isLauched && (dragStrength > slideThreshold))
         {
             rb.AddTorque(transform.right * dragStrength * Time.fixedDeltaTime);
+            //this.enabled = false;
             //print("Velocity: " + rb.velocity); 
+        }
+      
+        if(dragStrength > slideThreshold)
+        {
+            initialVelocity = HelperFunctions.RotateVector(transform.forward, cubeLaunchAngle).normalized * dragStrength * multiplier * Time.fixedDeltaTime;
         }
         else
         {
-
+            initialVelocity = transform.forward * slideStrength * multiplier * Time.fixedDeltaTime;
         }
-
-        initialVelocity = HelperFunctions.RotateVector(transform.forward, cubeLaunchAngle).normalized * dragStrength * multiplier * Time.fixedDeltaTime;
+        
         //print("Fixed update Initial Velocity: " + InitialVelocity);
     }
 
@@ -172,17 +184,6 @@ public class CubeController : MonoBehaviour
         if (!isInitSet)
         {
             isInitSet = true;
-            
-            if(Input.touchCount > 0)
-            {
-                prevPointerX = Input.GetTouch(0).position.x;
-                initialPointerY = Input.GetTouch(0).position.y;
-            }
-            else
-            {
-                prevPointerX = Input.mousePosition.x;
-                initialPointerY = Input.mousePosition.y;
-            }
             currentTurnTime = 0;
         }
 
@@ -191,23 +192,23 @@ public class CubeController : MonoBehaviour
             //float mouseDeltaY = initialPointerY - Input.mousePosition.y;
 
             dragStrength = GetDragStrength(Input.mousePosition.y);
-            RotateWithPointer(Input.mousePosition.x);
+            TranslateWithPointer(Input.mousePosition.x);
             UpdateLaunchRotationAngle(Input.mousePosition.y);
             multiplier = CalculateDynamicMultiplier(dragStrength);
+            //HelperFunctions.Log("Mulitiplioer: " + multiplier);
         }
         else
         {
             //float pointerDeltaY = initialPointerY - Input.GetTouch(0).position.y;
             dragStrength = GetDragStrength(Input.GetTouch(0).position.y);
 
-            RotateWithPointer(Input.GetTouch(0).position.x);
+            TranslateWithPointer(Input.GetTouch(0).position.x);
             UpdateLaunchRotationAngle(Input.GetTouch(0).position.y);
-            multiplier = CalculateDynamicMultiplier(dragStrength);
+            multiplier = CalculateDynamicMultiplier(Input.GetTouch(0).position.y);
         }
         //HelperFunctions.Log("Multiplier: " + multiplier);
         //HelperFunctions.Log("Final Drag Strength: " + dragStrength * multiplier);
         lineRenCtrl.CalculateProjectilePath();
-        
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -219,13 +220,14 @@ public class CubeController : MonoBehaviour
     {
         if(collision.gameObject.tag != "ground")
         {
-            RespawnCube();
+            
         }
             
     }
 
     private void OnMouseUp()
     {
+        rb.constraints = RigidbodyConstraints.None;
         isLauched = true;
         LaunchStatus?.Invoke(isLauched);
         isInitSet = false;
@@ -236,7 +238,8 @@ public class CubeController : MonoBehaviour
         lineRenCtrl.SetLineRenVisibility(false);
         rb.AddForce(initialVelocity, ForceMode.VelocityChange);
         Debug.DrawLine(transform.position, direction * dragStrength * multiplier, Color.green, 2, false);
-        //rb.AddExplosionForce(5, transform.position, 1, 2, ForceMode.Acceleration);
+        gameObject.GetComponent<SimpleBlock>().HasBeenLaunched = true;
+        
     }
 
     private void OnMouseDown()
@@ -254,27 +257,23 @@ public class CubeController : MonoBehaviour
     #endregion Unity Callbacks
 
 
-    private void RespawnCube()
-    {
-        GameObject newCube = Instantiate(cubePrefab, homePosition, Quaternion.identity);
-        newCube.GetComponent<Renderer>().material.color = HelperFunctions.RandomColor();
-        Destroy(this.gameObject);
-    }
+    
 
-    private void RotateWithPointer(float pointerX)
+    private void TranslateWithPointer(float pointerX)
     {
         //print("Raw Pointer value: " + pointerX);
         float percentTurned = currentTurnTime / timeToTurn;
         //print("Percent Lerped: " + percentTurned);
 
-        float reversedPointerX = Mathf.Abs(pointerX - Screen.width); //use this for inversed controls
+        //float reversedPointerX = Mathf.Abs(pointerX - Screen.width); //use this for inversed controls
 
-        float delta = HelperFunctions.Map(-32, 32, Screen.width * 0.2f, 
-            HelperFunctions.GetPercentageOf(20, Screen.width), reversedPointerX);
+        float delta = HelperFunctions.Map(-7, 7, Screen.width * 0.2f,
+            HelperFunctions.GetPercentageOf(20, Screen.width), pointerX);
 
-        Quaternion newRotation = Quaternion.Euler(0, ClampedCubeRotation(delta), 0);
-        transform.rotation = Quaternion.Slerp(newRotation, 
-            transform.rotation, percentTurned); //Quaternion.LookRotation(cam.ScreenToWorldPoint(Input.mousePosition));
+        Vector3 newPosition = new Vector3(ClampedCubeRotation(delta), gameObject.transform.position.y,
+            gameObject.transform.position.z);
+
+        transform.position = Vector3.Lerp(newPosition, transform.position, percentTurned); //Quaternion.LookRotation(cam.ScreenToWorldPoint(Input.mousePosition));
     }
 
     private float ClampedCubeRotation(float value)
@@ -290,20 +289,25 @@ public class CubeController : MonoBehaviour
         float endOfScreenY = Screen.height;
 
         //HelperFunctions.LogListContent(new List<string>{"Reserve Pointer Pos: " + reversePointerPosition,
-        //    "Cube Position: " + reverseCubePositionY, "End of screen: " + endOfScreenY});
+            //"Cube Position: " + reverseCubePositionY, "End of screen: " + endOfScreenY});
 
-        cubeLaunchAngle = HelperFunctions.Map(15, 69, reverseCubePositionY, endOfScreenY, reversePointerPosition);
+        cubeLaunchAngle = HelperFunctions.Map(30, 69, reverseCubePositionY, endOfScreenY, reversePointerPosition);
+        //HelperFunctions.Log("Launch Angle: " + cubeLaunchAngle);
     }
 
     private float CalculateDynamicMultiplier(float dragStr)
     {
         if (SystemInfo.deviceType != DeviceType.Handheld)
         {
-            return HelperFunctions.Map(25, 100, 0, startingCubeScreenPosition.y, dragStr);
+            float reverseCubePositionY = Mathf.Abs(startingCubeScreenPosition.y - Screen.height);
+            return HelperFunctions.Map(10, dynamicMultiplierMax, reverseCubePositionY, Screen.height, dragStr);
         }
         else
         {
-            return HelperFunctions.Map(25, 75, 0, startingCubeScreenPosition.y, dragStr);
+            /*float reverseCubePositionY = Mathf.Abs(startingCubeScreenPosition.y - Screen.height);
+            HelperFunctions.Log("Multiplier: " + HelperFunctions.Map(2, 5, 0, startingCubeScreenPosition.y, dragStr));
+            return HelperFunctions.Map(2, dynamicMultiplierMax, reverseCubePositionY, Screen.height, dragStr);*/
+            return dynamicMultiplierMax;
         }
     }
 
@@ -318,7 +322,13 @@ public class CubeController : MonoBehaviour
             dragStrength = 0;
         }
 
-        //HelperFunctions.Log("Drag Strength: " + dragStrength);
+        HelperFunctions.Log("Drag Strength: " + dragStrength);
+        
+        if(SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            return dragStrength;
+        }
+
         return dragStrength;
     }
 
